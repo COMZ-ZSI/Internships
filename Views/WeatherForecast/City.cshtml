@@ -1,0 +1,89 @@
+﻿@model CityWeatherForecast
+@{
+    ViewData["Title"] = "City";
+}
+
+<!-- jQuery -->
+<script src="~/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="~/plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+    $.widget.bridge('uibutton', $.ui.button)
+</script>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row" id="result" style="display: flex; justify-content: center;">
+            <canvas id="myChart"></canvas>
+
+        </div>
+    </div>
+</section>
+
+
+@if (@Model != null && @Model.Name != String.Empty)
+{
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Current weather in @Model.Name</h1>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            @*<th scope="row">1</th>*@
+            <td>City</td>
+            <td id="name">@Model.Name</td>
+        </tr>
+        <tr>
+            @*<th scope="row">2</th>*@
+            <td>Summary</td>
+            <td id="summary">@Model.Summary</td>
+        </tr>
+        <tr>
+            @*<th scope="row">3</th>*@
+            <td>Date</td>
+            <td id="date">@Model.Date</td>
+        </tr>
+        <tr>
+            @*<th scope="row">4</th>*@
+            <td>Temperature</td>
+            <td id="temperature"> @Model.TemperatureC</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+   <script>
+        function saveButton() {
+            var weatherModel = {
+                name : document.getElementById("name").innerHTML.trim(),
+                date: new Date(document.getElementById("date").innerHTML.trim()).toISOString(),
+                temperatureC: document.getElementById("temperature").innerHTML.trim() ,
+                summary : document.getElementById("summary").innerHTML.trim()
+            };
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("PostWeather", "WeatherForecast")",
+                data: JSON.stringify(weatherModel),
+                contentType: "application/json"
+            });
+
+        }
+    </script>
+
+    //ajax
+    <button class="btn btn-info" onClick="saveButton()">Save</button>
+
+    <input value="History" type="button" class="btn btn-info" onclick='window.location.href = "@Url.Action("ReadWeather", "WeatherForecast", new { name = @Model.Name})";'/>
+
+}
+
